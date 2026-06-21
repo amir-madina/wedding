@@ -823,27 +823,34 @@
     const attendIcon = attend.includes("удовольствием") ? "✅" :
                        attend.includes("уверен")        ? "🤔" : "❌";
 
-    const text = `🎉 *Новый ответ на приглашение*\n\n👤 *${name}*\n${attendIcon} ${attend}`;
+    const tgText = `🎉 *Новый ответ на приглашение*\n\n👤 *${name}*\n${attendIcon} ${attend}`;
 
-    const BOT_TOKEN = "8806839736:AAG2iz22ZGyHKT-wcsk-9A0yLH6iGXe9_0g";
-    const CHAT_ID   = "-5424389527";
+    const BOT_TOKEN  = "8806839736:AAG2iz22ZGyHKT-wcsk-9A0yLH6iGXe9_0g";
+    const CHAT_ID    = "-5424389527";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzc8pQZ2S6qCUcScbjkR1wfnYrLo7M73mOsyKKaE8pJxol-s70cZr8TrozTo5wgjn0O/exec";
 
     try {
-      const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      // Отправляем в Telegram
+      const tgRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id:    CHAT_ID,
-          text:       text,
-          parse_mode: "Markdown"
-        })
+        body: JSON.stringify({ chat_id: CHAT_ID, text: tgText, parse_mode: "Markdown" })
       });
-      const json = await res.json();
-      if (json.ok) {
+
+      // Сохраняем в Google Sheets
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "rsvp", name, attend }),
+        mode: "no-cors"
+      });
+
+      const tgJson = await tgRes.json();
+      if (tgJson.ok) {
         form.reset();
         msg.textContent = "Спасибо! Ваш ответ получен 💛";
       } else {
-        throw new Error(json.description);
+        throw new Error(tgJson.description);
       }
     } catch (err) {
       msg.className = "form-msg error";
