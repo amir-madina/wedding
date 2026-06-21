@@ -532,6 +532,7 @@
     align-items: center; justify-content: center;
     text-align: center; padding: 40px 28px;
     transition: opacity 0.8s ease, visibility 0.8s ease;
+    overflow: hidden;
   }
   .splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
   .splash-names {
@@ -742,6 +743,7 @@
   <!-- =========================== RSVP =========================== -->
   <section class="rsvp reveal">
     <p class="eyebrow">Пожалуйста, подтвердите присутствие на торжестве:</p>
+    <p class="prose muted-prose" style="margin-bottom:6px;font-size:1rem;line-height:1.65;max-width:38ch;margin-left:auto;margin-right:auto">Просим указывать полное имя и фамилию для корректного составления списка гостей.</p>
     <p class="prose muted-prose" style="margin-bottom:24px;font-size:1rem;line-height:1.65">Ответьте до 1 августа 2026 года.</p>
 
     <!-- ============================================================ -->
@@ -751,7 +753,7 @@
     <!-- ============================================================ -->
     <form id="rsvp-form" action="https://formspree.io/f/ВАШ_ID" method="POST">
       <div class="field">
-        <label for="name">Ваше имя</label>
+        <label for="name">Ваше имя и фамилия</label>
         <input type="text" id="name" name="Имя" required />
       </div>
 
@@ -905,6 +907,8 @@
     // запуск через сплэш
     splashBtn.addEventListener("click", () => {
       splash.classList.add("hidden");
+      document.body.style.overflow = "";
+      window.scrollTo({ top: 0, behavior: "instant" });
       audio.volume = 0;
       audio.play().then(() => {
         btn.classList.add("playing");
@@ -912,6 +916,9 @@
         fadeIn();
       }).catch(() => {});
     });
+
+    // блокируем скролл пока сплэш открыт
+    document.body.style.overflow = "hidden";
 
     btn.addEventListener("click", toggleMusic);
   })();
