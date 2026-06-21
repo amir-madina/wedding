@@ -112,8 +112,9 @@
     overflow: hidden;
   }
   .hero .eyebrow {
-    color: var(--gold-soft); margin-bottom: 24px;
+    color: var(--gold-soft); margin-bottom: 36px;
     position: relative; z-index: 2;
+    font-size: 1.35rem; text-transform: uppercase; letter-spacing: 0.1em;
   }
 
   /* крупный каллиграфический вензель — А слева сверху, М справа снизу */
@@ -218,7 +219,9 @@
     text-transform: uppercase;
     color: var(--gold);
   }
-  .venue .eyebrow { color: var(--gold-soft); }
+  .venue .eyebrow { color: var(--gold-soft); font-size: 1.35rem; text-transform: uppercase; letter-spacing: 0.1em; }
+  .calendar .eyebrow { font-size: 1.35rem; text-transform: uppercase; letter-spacing: 0.1em; }
+  .countdown .eyebrow { font-size: 1.35rem; text-transform: uppercase; letter-spacing: 0.1em; }
 
   .section-heading {
     font-family: var(--serif);
@@ -743,8 +746,8 @@
   <!-- =========================== RSVP =========================== -->
   <section class="rsvp reveal">
     <p class="eyebrow">Пожалуйста, подтвердите присутствие на торжестве:</p>
-    <p class="prose muted-prose" style="margin-bottom:6px;font-size:1rem;line-height:1.65;max-width:38ch;margin-left:auto;margin-right:auto">Просим указывать полное имя и фамилию для корректного составления списка гостей.</p>
-    <p class="prose muted-prose" style="margin-bottom:24px;font-size:1rem;line-height:1.65">Ответьте до 1 августа 2026 года.</p>
+    <p class="prose muted-prose" style="margin-bottom:6px;font-size:1rem;line-height:1.65;max-width:38ch;margin-left:auto;margin-right:auto">Укажите, пожалуйста, Ваше имя и фамилию (это упростит планирование).<br>Если Вы планируете придти с парой, то просим указать данные двоих гостей.</p>
+    <p class="prose muted-prose" style="margin-top:16px;margin-bottom:24px;font-size:1rem;line-height:1.65">Ответьте до 1 августа 2026 года.</p>
 
     <!-- ============================================================ -->
     <!--  ВАЖНО: вставьте свой Formspree endpoint в action ниже.      -->
