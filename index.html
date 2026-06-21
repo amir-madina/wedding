@@ -27,8 +27,8 @@
   /*  ПАЛИТРА И ТОКЕНЫ                                              */
   /* ============================================================= */
   :root {
-    --night:    #7d8468;   /* светлый шалфей, фон героя/футера         */
-    --dusk:     #8e9578;   /* шалфей светлее (ховеры)                  */
+    --night:    #6b5a4e;   /* тёмный мокко, фон героя/футера           */
+    --dusk:     #7c6b5f;   /* мокко светлее (ховеры)                   */
     --gold:     #a98545;   /* тёплая латунь — главный акцент           */
     --gold-soft:#e4d2a3;   /* мягкая латунь для тёмного фона           */
     --on-gold:  #2c2d1c;   /* почти-чёрный для текста на золоте        */
@@ -103,7 +103,7 @@
     position: relative;
     min-height: 100svh;
     background:
-      radial-gradient(120% 80% at 50% 0%, #9aa082 0%, var(--night) 55%, #636854 100%);
+      radial-gradient(120% 80% at 50% 0%, #876860 0%, var(--night) 55%, #52403a 100%);
     color: var(--vellum);
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
@@ -502,10 +502,10 @@
   .footer {
     position: relative;
     background:
-      radial-gradient(120% 90% at 50% 100%, #9aa082 0%, var(--night) 55%, #636854 100%);
+      radial-gradient(120% 90% at 50% 100%, #876860 0%, var(--night) 55%, #52403a 100%);
     color: var(--vellum);
-    text-align: center; padding: 48px 28px;
-    overflow: hidden;
+    text-align: center; padding: 48px 28px 64px;
+    overflow: visible;
   }
   .footer .divider { margin-top: 0; margin-bottom: 10px; }
   .footer .names {
@@ -519,7 +519,27 @@
     position: relative; z-index: 2;
     margin-top: 14px; letter-spacing: 0.28em; text-transform: uppercase;
     font-size: 0.76rem; color: var(--light-muted); font-weight: 400;
+    padding-bottom: 8px;
   }
+
+  /* ============================================================= */
+  /*  МУЗЫКАЛЬНЫЙ ПЛЕЕР                                           */
+  /* ============================================================= */
+  .music-btn {
+    position: fixed; bottom: 24px; right: 20px; z-index: 100;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--night); border: 1px solid var(--gold-soft);
+    color: var(--gold-soft); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    transition: background 0.25s, transform 0.2s;
+    outline: none;
+  }
+  .music-btn:hover { background: var(--dusk); transform: scale(1.08); }
+  .music-btn svg { width: 18px; height: 18px; }
+  .music-btn .icon-pause { display: none; }
+  .music-btn.playing .icon-play  { display: none; }
+  .music-btn.playing .icon-pause { display: block; }
 
   /* ============================================================= */
   /*  ДОСТУПНОСТЬ: уважение к prefers-reduced-motion                */
@@ -537,6 +557,15 @@
 </style>
 </head>
 <body>
+  <audio id="bg-music" src="music.mp3" loop preload="none"></audio>
+  <button class="music-btn" id="music-btn" aria-label="Включить музыку">
+    <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M8 5.14v14l11-7-11-7z"/>
+    </svg>
+    <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M6 5h4v14H6zm8 0h4v14h-4z"/>
+    </svg>
+  </button>
 <div class="page">
 
   <!-- =========================== HERO =========================== -->
@@ -779,6 +808,73 @@
 
     tick();
     setInterval(tick, 1000);
+  })();
+
+  /* =================== МУЗЫКАЛЬНЫЙ ПЛЕЕР ==================== */
+  (function () {
+    const audio  = document.getElementById("bg-music");
+    const btn    = document.getElementById("music-btn");
+    let started  = false;
+
+    function toggleMusic() {
+      if (audio.paused) {
+        audio.volume = 0;
+        audio.play().then(() => {
+          btn.classList.add("playing");
+          btn.setAttribute("aria-label", "Выключить музыку");
+          fadeIn();
+        }).catch(() => {});
+      } else {
+        fadeOut(() => {
+          audio.pause();
+          btn.classList.remove("playing");
+          btn.setAttribute("aria-label", "Включить музыку");
+        });
+      }
+    }
+
+    function fadeIn() {
+      let v = 0;
+      const t = setInterval(() => {
+        v = Math.min(v + 0.02, 0.45);
+        audio.volume = v;
+        if (v >= 0.45) clearInterval(t);
+      }, 80);
+    }
+
+    function fadeOut(cb) {
+      let v = audio.volume;
+      const t = setInterval(() => {
+        v = Math.max(v - 0.03, 0);
+        audio.volume = v;
+        if (v <= 0) { clearInterval(t); cb(); }
+      }, 60);
+    }
+
+    // автозапуск при первом касании/клике страницы
+    function autoStart() {
+      if (started) return;
+      started = true;
+      audio.volume = 0;
+      audio.play().then(() => {
+        btn.classList.add("playing");
+        btn.setAttribute("aria-label", "Выключить музыку");
+        fadeIn();
+      }).catch(() => {});
+      document.removeEventListener("click",      autoStart);
+      document.removeEventListener("touchstart", autoStart);
+      document.removeEventListener("scroll",     autoStart);
+    }
+
+    document.addEventListener("click",      autoStart, { once: true });
+    document.addEventListener("touchstart", autoStart, { once: true });
+    document.addEventListener("scroll",     autoStart, { once: true, passive: true });
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      started = true;
+      toggleMusic();
+    });
   })();
 </script>
 </body>
