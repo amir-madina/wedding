@@ -815,17 +815,35 @@
     ev.preventDefault();
     msg.className = "form-msg";
     msg.textContent = "Отправляем…";
+
+    const data     = new FormData(form);
+    const name     = data.get("Имя")         || "—";
+    const attend   = data.get("Присутствие") || "—";
+
+    const attendIcon = attend.includes("удовольствием") ? "✅" :
+                       attend.includes("уверен")        ? "🤔" : "❌";
+
+    const text = `🎉 *Новый ответ на приглашение*\n\n👤 *${name}*\n${attendIcon} ${attend}`;
+
+    const BOT_TOKEN = "8806839736:AAG2iz22ZGyHKT-wcsk-9A0yLH6iGXe9_0g";
+    const CHAT_ID   = "-5424389527";
+
     try {
-      const res = await fetch(form.action, {
+      const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
         method: "POST",
-        body: new FormData(form),
-        headers: { Accept: "application/json" },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id:    CHAT_ID,
+          text:       text,
+          parse_mode: "Markdown"
+        })
       });
-      if (res.ok) {
+      const json = await res.json();
+      if (json.ok) {
         form.reset();
         msg.textContent = "Спасибо! Ваш ответ получен 💛";
       } else {
-        throw new Error("bad response");
+        throw new Error(json.description);
       }
     } catch (err) {
       msg.className = "form-msg error";
