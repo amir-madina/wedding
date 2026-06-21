@@ -56,7 +56,7 @@
   body {
     font-family: var(--sans);
     color: var(--ink);
-    background: #3c3f2a;          /* поля по бокам на десктопе */
+    background: #3a2e28;          /* поля по бокам на десктопе */
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
@@ -523,6 +523,49 @@
   }
 
   /* ============================================================= */
+  /*  ЗАСТАВКА-ОВЕРЛЕЙ                                            */
+  /* ============================================================= */
+  .splash {
+    position: fixed; inset: 0; z-index: 999;
+    background: var(--night);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px 28px;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+  .splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  .splash-names {
+    font-family: var(--feature); font-weight: 400;
+    font-size: clamp(2.8rem, 14vw, 4.2rem);
+    color: var(--gold-soft); line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .splash-date {
+    font-family: var(--sans); font-size: 0.8rem;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: rgba(228,210,163,0.6); margin-bottom: 48px;
+  }
+  .splash-btn {
+    font-family: var(--prose); font-size: 1.1rem; font-weight: 500;
+    color: var(--night); background: var(--gold-soft);
+    border: none; border-radius: 3px;
+    padding: 16px 40px; cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.25s, transform 0.2s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .splash-btn:hover { background: var(--gold); transform: scale(1.04); }
+  .splash-divider {
+    display: flex; align-items: center; gap: 14px;
+    max-width: 220px; width: 100%; margin: 0 auto 36px;
+  }
+  .splash-divider::before, .splash-divider::after {
+    content: ""; flex: 1; height: 1px;
+    background: rgba(228,210,163,0.35);
+  }
+  .splash-divider span { color: var(--gold-soft); font-size: 0.75rem; }
+
+  /* ============================================================= */
   /*  МУЗЫКАЛЬНЫЙ ПЛЕЕР                                           */
   /* ============================================================= */
   .music-btn {
@@ -557,7 +600,15 @@
 </style>
 </head>
 <body>
-  <audio id="bg-music" src="music.mp3" loop preload="none"></audio>
+  <audio id="bg-music" src="music.mp3" loop preload="auto"></audio>
+
+  <!-- Заставка -->
+  <div class="splash" id="splash">
+    <p class="splash-names">Амир<br>&amp;<br>Мадина</p>
+    <div class="splash-divider"><span>✦</span></div>
+    <p class="splash-date">26 · 09 · 2026</p>
+    <button class="splash-btn" id="splash-btn">Открыть приглашение</button>
+  </div>
   <button class="music-btn" id="music-btn" aria-label="Включить музыку">
     <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor">
       <path d="M8 5.14v14l11-7-11-7z"/>
@@ -814,24 +865,8 @@
   (function () {
     const audio  = document.getElementById("bg-music");
     const btn    = document.getElementById("music-btn");
-    let started  = false;
-
-    function toggleMusic() {
-      if (audio.paused) {
-        audio.volume = 0;
-        audio.play().then(() => {
-          btn.classList.add("playing");
-          btn.setAttribute("aria-label", "Выключить музыку");
-          fadeIn();
-        }).catch(() => {});
-      } else {
-        fadeOut(() => {
-          audio.pause();
-          btn.classList.remove("playing");
-          btn.setAttribute("aria-label", "Включить музыку");
-        });
-      }
-    }
+    const splash = document.getElementById("splash");
+    const splashBtn = document.getElementById("splash-btn");
 
     function fadeIn() {
       let v = 0;
@@ -851,30 +886,34 @@
       }, 60);
     }
 
-    // автозапуск при первом касании/клике страницы
-    function autoStart() {
-      if (started) return;
-      started = true;
+    function toggleMusic() {
+      if (audio.paused) {
+        audio.play().then(() => {
+          btn.classList.add("playing");
+          btn.setAttribute("aria-label", "Выключить музыку");
+          fadeIn();
+        }).catch(() => {});
+      } else {
+        fadeOut(() => {
+          audio.pause();
+          btn.classList.remove("playing");
+          btn.setAttribute("aria-label", "Включить музыку");
+        });
+      }
+    }
+
+    // запуск через сплэш
+    splashBtn.addEventListener("click", () => {
+      splash.classList.add("hidden");
       audio.volume = 0;
       audio.play().then(() => {
         btn.classList.add("playing");
         btn.setAttribute("aria-label", "Выключить музыку");
         fadeIn();
       }).catch(() => {});
-      document.removeEventListener("click",      autoStart);
-      document.removeEventListener("touchstart", autoStart);
-      document.removeEventListener("scroll",     autoStart);
-    }
-
-    document.addEventListener("click",      autoStart, { once: true });
-    document.addEventListener("touchstart", autoStart, { once: true });
-    document.addEventListener("scroll",     autoStart, { once: true, passive: true });
-
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      started = true;
-      toggleMusic();
     });
+
+    btn.addEventListener("click", toggleMusic);
   })();
 </script>
 </body>
