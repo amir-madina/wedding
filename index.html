@@ -746,8 +746,11 @@
   <!-- =========================== RSVP =========================== -->
   <section class="rsvp reveal">
     <p class="eyebrow">Пожалуйста, подтвердите присутствие на торжестве:</p>
-    <p class="prose muted-prose" style="margin-bottom:6px;font-size:1rem;line-height:1.65;max-width:38ch;margin-left:auto;margin-right:auto">Укажите, пожалуйста, Ваше имя и фамилию (это упростит планирование).<br>Если Вы планируете придти с парой, то просим указать данные двоих гостей.</p>
-    <p class="prose muted-prose" style="margin-top:16px;margin-bottom:24px;font-size:1rem;line-height:1.65">Ответьте до 1 августа 2026 года.</p>
+    <p class="prose muted-prose" style="margin-bottom:24px;font-size:1rem;line-height:1.85;max-width:38ch;margin-left:auto;margin-right:auto">
+      Укажите, пожалуйста, Ваше имя и фамилию.<br>
+      При ответе <span style="color:var(--gold)">«приду с парой»</span> просим указать имена обоих гостей.<br>
+      Будем ждать Вашего ответа до 1 августа 2026 года.
+    </p>
 
     <!-- ============================================================ -->
     <!--  ВАЖНО: вставьте свой Formspree endpoint в action ниже.      -->
@@ -763,7 +766,8 @@
       <div class="field">
         <label>Планируете ли вы присутствовать?</label>
         <div class="radio-group">
-          <label class="radio"><input type="radio" name="Присутствие" value="Да, с удовольствием!" required /> Да, с удовольствием!</label>
+          <label class="radio"><input type="radio" name="Присутствие" value="Да, приду один(а)" required /> Да, приду один(а)</label>
+          <label class="radio"><input type="radio" name="Присутствие" value="Да, приду с парой" /> Да, приду с парой</label>
           <label class="radio"><input type="radio" name="Присутствие" value="Пока не уверен(а)" /> Пока не уверен(а)</label>
           <label class="radio"><input type="radio" name="Присутствие" value="К сожалению, не смогу" /> К сожалению, не смогу</label>
         </div>
@@ -823,8 +827,9 @@
     const name     = data.get("Имя")         || "—";
     const attend   = data.get("Присутствие") || "—";
 
-    const attendIcon = attend.includes("удовольствием") ? "✅" :
-                       attend.includes("уверен")        ? "🤔" : "❌";
+    const attendIcon = attend.includes("с парой")    ? "💑" :
+                       attend.includes("один")        ? "✅" :
+                       attend.includes("уверен")      ? "🤔" : "❌";
 
     const tgText = `🎉 *Новый ответ на приглашение*\n\n👤 *${name}*\n${attendIcon} ${attend}`;
 
